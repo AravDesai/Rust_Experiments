@@ -15,3 +15,5 @@ The output should display the file, whether it has URLs that are valid or not an
 + [ ] Use clap or cli-rs for clap -- rust specific toolings 
 + [ ] use fewer strings -- type theory learnings
 + [ ] parallize your program -- system programming learnings
+
+in the form of a PR -- git learning
