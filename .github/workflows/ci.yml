@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Clippy
-      run: cargo clippy --all-features --manifest-path /home/runner/work/Rust_Experiments/Rust_Experiments/broken_url_finder
+      run: cargo clippy --all-features --manifest-path /home/runner/work/Rust_Experiments/Rust_Experiments/broken_url_finder/cargo.toml
     - name: Build
       run: cargo build --verbose
     - name: Format
