@@ -23,9 +23,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Clippy
-    - run: cargo clippy --tests --all-features -- -D warnings
+      run: cargo clippy --tests --all-features -- -D warnings
     - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
     - name: Build
       run: cargo build --verbose
+    - name: Format
+      run: cargo fmt
     - name: Run tests
       run: cargo test --verbose
