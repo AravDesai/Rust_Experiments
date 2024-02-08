@@ -21,15 +21,11 @@ jobs:
           - nightly
           
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
+    - name: Rust Checks
     - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
     - name: Clippy
-    - uses: actions/checkout@v1
-    - run: rustup component add clippy
-    - uses: actions-rs/clippy-check@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        args: --all-features --manifest-path broken_url_finder
+    - run: cargo clippy --all-features --manifest-path broken_url_finder
     - name: Build
       run: cargo build --verbose
     - name: Format
