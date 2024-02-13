@@ -19,6 +19,11 @@ jobs:
           - stable
           - beta
           - nightly
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./broken_url_finder
           
     steps:
      - uses: actions/checkout@v3
