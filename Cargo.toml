@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+	"db",
+	"derive",
+	"example",
+]
