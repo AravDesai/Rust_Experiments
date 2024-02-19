@@ -11,9 +11,9 @@ The output should display the file, whether it has URLs that are valid or not an
 
 # todo
 
-+ [ ] add CI to your repo. fmt, clippy -- infra
-+ [ ] Use clap or cli-rs for clap -- rust specific toolings 
-+ [ ] use fewer strings -- type theory learnings
++ [x] add CI to your repo. fmt, clippy -- infra
++ [x] Use clap or cli-rs for clap -- rust specific toolings 
++ [x] use fewer strings -- type theory learnings
 + [ ] parallize your program -- system programming learnings
 
 in the form of a PR -- git learning
