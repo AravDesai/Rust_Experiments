@@ -1,11 +1,11 @@
 use clap::Parser;
 use std::fs;
-use std::path::Path;
+
 use std::path::PathBuf;
 //use std::thread::JoinHandle;
-use clap::{command, Arg};
+use clap::{command};
 use regex::Regex;
-use reqwest;
+
 //use std::thread;
 // use thread_id;
 // use std::sync::{Arc, Mutex};
