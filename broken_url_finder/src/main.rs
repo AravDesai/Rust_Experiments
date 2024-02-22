@@ -1,32 +1,39 @@
-use std::env;
+use clap::Parser;
 use std::fs;
-use std::fs::metadata;
-use std::path::Path;
+
+use std::path::PathBuf;
+//use std::thread::JoinHandle;
+use clap::command;
 use regex::Regex;
-use reqwest;
 
-//The main function is responsible for taking in command line arguments and sending them to appropriate methods to be processed
+//use std::thread;
+// use thread_id;
+// use std::sync::{Arc, Mutex};
+// use std::rc::Rc;
+
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct BrokenUrl {
+    directory: PathBuf,
+}
+
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args = BrokenUrl::parse();
+    let directory_path = args.directory;
 
-    if args.len() < 2 {
-        panic!("Not enough arguments");
-    }
-
-    let directory = &args[1];
-    let directory_path = Path::new(directory);
-
-    if !(directory_path.exists()){
+    if !(directory_path.exists()) {
         panic!("Please enter a valid path");
     }
 
     //Print statement for formatting a table
-    println!("{0: <120} | {1: <15} | {2:10}" ,
-    "Path", "Status", "Status Code");
+    println!(
+        "{0: <120} | {1: <15} | {2:10}",
+        "Path", "Status", "Status Code"
+    );
 
     //If the path entered is just a single file, it is sent directly to be read
-    if directory_path.is_file(){
-        file_reader(&directory.to_string());
+    if directory_path.is_file() {
+        file_reader(directory_path);
         return;
     }
 
@@ -34,38 +41,36 @@ fn main() {
 }
 
 //The directory reader recursively goes through the directory and sends files to file_reader()
-fn directory_reader(directory: &Path){
+fn directory_reader(directory: PathBuf) {
     let paths = fs::read_dir(directory).unwrap();
 
-    for path in paths{
-        let path_string = path.unwrap().path().to_string_lossy().to_string();
-        let md = metadata(&path_string).unwrap();
-
-        //if and else statements that interpret metadata and call either directory_reader recursively or file_reader to be processed
-
-        if md.is_dir(){
-            directory_reader(Path::new(&path_string));
-        }
-        else if md.is_file(){
-            file_reader(&path_string);
-        }
-        else{
-            println!("{path_string} not recognized as a directory or file");
+    for path in paths {
+        let path_buf = path.unwrap().path();
+        if path_buf.is_dir() {
+            //let new_thread = thread::spawn(move ||{
+            directory_reader(path_buf);
+            //});
+        } else if path_buf.is_file() {
+            file_reader(path_buf);
+        } else {
+            println!(
+                "{} not recognized as a directory or file",
+                path_buf.display()
+            );
         }
     }
 }
 
 //enum that helps with the organization of different statuses. It is used in the file_reader() function
-enum StatusOptions{
+enum StatusOptions {
     InvalidURL,
     ValidURL,
     NoURLs,
 }
 
 //This function is responsible for reading files and checking for URLs. It then checks if these URLs are valid.
-fn file_reader(path: &String){
-    let contents = fs::read_to_string(path)
-    .expect("Cannot read file: {path}");
+fn file_reader(path: PathBuf) {
+    let contents = fs::read_to_string(path.clone()).expect("Cannot read file");
 
     //regex is used to make a guideline for how URLs will be searched for. Specifically looks for items that start with a https
     let url_regex = Regex::new(r#"(https?|ftp)://[^\s/$.?#].[^\s]*"#).unwrap();
@@ -73,19 +78,18 @@ fn file_reader(path: &String){
     //status is set to NoURLs as a default
     let mut status = StatusOptions::NoURLs;
 
-    let mut status_code = String::from("");
+    let mut status_code = String::from("None");
 
     //loop that goes through each url checking validity
     for url in url_regex.find_iter(&contents) {
         let response = reqwest::blocking::get(url.as_str());
 
         //if url is invalid it resets status code (unwrapping status code of invalid URL makes the program panic) and breaks out of loop
-        if response.is_err() { 
+        if response.is_err() {
             status = StatusOptions::InvalidURL;
-            status_code = String::from("");
+            status_code = String::from("Invalid");
             break;
-        }
-        else {
+        } else {
             status = StatusOptions::ValidURL;
             status_code = response.unwrap().status().to_string();
         }
@@ -93,12 +97,15 @@ fn file_reader(path: &String){
 
     //Match to connect enum options to appropriate string slices to be printed
     let status_string = match status {
-        StatusOptions::InvalidURL => "Invalid URL",
-        StatusOptions::NoURLs => "No URLs",
-        StatusOptions::ValidURL => "Valid URL"
+        StatusOptions::InvalidURL => "Invalid",
+        StatusOptions::NoURLs => "None",
+        StatusOptions::ValidURL => "Valid",
     };
-
-    //Printing based on every file
-    println!("{0: <120} | {1: <15} | {2:10}" ,
-    {path}, {status_string}, {status_code});
+    //
+    println!(
+        "{0: <120} | {1: <15} | {2:10}",
+        path.display(),
+        status_string,
+        status_code
+    );
 }
