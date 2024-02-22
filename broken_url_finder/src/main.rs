@@ -5,8 +5,7 @@ use std::path::PathBuf;
 //use std::thread::JoinHandle;
 use clap::command;
 use regex::Regex;
-
-//use std::thread;
+use std::thread;
 // use thread_id;
 // use std::sync::{Arc, Mutex};
 // use std::rc::Rc;
@@ -40,24 +39,33 @@ fn main() {
     directory_reader(directory_path);
 }
 
+
 //The directory reader recursively goes through the directory and sends files to file_reader()
 fn directory_reader(directory: PathBuf) {
     let paths = fs::read_dir(directory).unwrap();
-
+    let mut threads = vec![];
     for path in paths {
+        
         let path_buf = path.unwrap().path();
         if path_buf.is_dir() {
-            //let new_thread = thread::spawn(move ||{
-            directory_reader(path_buf);
-            //});
+            let new_thread = thread::spawn(move ||{
+                directory_reader(path_buf);
+            });
+            threads.push(new_thread);
         } else if path_buf.is_file() {
-            file_reader(path_buf);
+            let new_thread = thread::spawn(move ||{
+                file_reader(path_buf);
+            });
+            threads.push(new_thread);
         } else {
             println!(
                 "{} not recognized as a directory or file",
                 path_buf.display()
             );
         }
+    }
+    for th in threads{
+        th.join().unwrap();
     }
 }
 

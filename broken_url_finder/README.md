@@ -14,6 +14,8 @@ The output should display the file, whether it has URLs that are valid or not an
 + [x] add CI to your repo. fmt, clippy -- infra
 + [x] Use clap or cli-rs for clap -- rust specific toolings 
 + [x] use fewer strings -- type theory learnings
-+ [ ] parallize your program -- system programming learnings
++ [x] parallelize your program -- system programming learnings
+
++ [ ] Write benchmarks for different methods of parallelization - channels, async - await, test different inputs 
 
 in the form of a PR -- git learning
