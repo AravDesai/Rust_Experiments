@@ -17,5 +17,3 @@ The output should display the file, whether it has URLs that are valid or not an
 + [x] parallelize your program -- system programming learnings
 
 + [ ] Write benchmarks for different methods of parallelization - channels, async - await, test different inputs 
-
-in the form of a PR -- git learning
