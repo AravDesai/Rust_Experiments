@@ -3,7 +3,7 @@ use std::fs;
 
 use std::path::PathBuf;
 //use std::thread::JoinHandle;
-use clap::{command};
+use clap::command;
 use regex::Regex;
 
 //use std::thread;
