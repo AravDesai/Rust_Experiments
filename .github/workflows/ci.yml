@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "SomeChanges" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "SomeChanges" ]
+    branches: [ "main" ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -13,17 +13,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        toolchain:
-          - stable
-          - beta
-          - nightly
-
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./broken_url_finder
           
     steps:
      - uses: actions/checkout@v3
