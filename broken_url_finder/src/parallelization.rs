@@ -1,80 +1,34 @@
-pub mod parallelization;
-use parallelization::parallel::{directory_reader, file_reader};
-// pub mod channels;
-// use channels::channel::{file_reader, channel_handler};
-// pub mod no_parallelization;
-// use no_parallelization::no_parallel::directory_reader;
-//pub mod async_await;
-//use async_await::async_await::{directory_reader,file_reader};
-use clap::Parser;
-
+pub mod parallel{
+use std::fs;
 use std::path::PathBuf;
-//use std::thread::JoinHandle;
-use clap::command;
-<<<<<<< Updated upstream
 use regex::Regex;
+use std::thread;
 
-//use std::thread;
-=======
->>>>>>> Stashed changes
-// use thread_id;
-// use std::sync::{Arc, Mutex};
-// use std::rc::Rc;
-
-
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-struct BrokenUrl {
-    directory: PathBuf,
-}
-
-//#[tokio::main]
-
-//async fn main() {
-fn main() {
-    let args = BrokenUrl::parse();
-    let directory_path = args.directory;
-
-    if !(directory_path.exists()) {
-        panic!("Please enter a valid path");
-    }
-
-    //Print statement for formatting a table
-    println!(
-        "{0: <120} | {1: <15} | {2:10}",
-        "Path", "Status", "Status Code"
-    );
-
-    //If the path entered is just a single file, it is sent directly to be read
-    if directory_path.is_file() {
-        file_reader(directory_path);
-        return;
-    }
-
-    //directory_reader(directory_path).await;
-
-    directory_reader(directory_path);
-<<<<<<< Updated upstream
-}
-
-//The directory reader recursively goes through the directory and sends files to file_reader()
-fn directory_reader(directory: PathBuf) {
+pub fn directory_reader(directory: PathBuf) {
     let paths = fs::read_dir(directory).unwrap();
-
+    let mut threads = vec![];
     for path in paths {
+        
         let path_buf = path.unwrap().path();
         if path_buf.is_dir() {
-            //let new_thread = thread::spawn(move ||{
-            directory_reader(path_buf);
-            //});
+            let new_thread = thread::spawn(move ||{
+                directory_reader(path_buf);
+            });
+            threads.push(new_thread);
         } else if path_buf.is_file() {
-            file_reader(path_buf);
+            let new_thread = thread::spawn(move ||{
+                file_reader(path_buf);
+            });
+            threads.push(new_thread);
         } else {
             println!(
                 "{} not recognized as a directory or file",
                 path_buf.display()
             );
         }
+    }
+    for th in threads{
+        th.join().unwrap();
     }
 }
 
@@ -86,7 +40,7 @@ enum StatusOptions {
 }
 
 //This function is responsible for reading files and checking for URLs. It then checks if these URLs are valid.
-fn file_reader(path: PathBuf) {
+pub fn file_reader(path: PathBuf) {
     let contents = fs::read_to_string(path.clone()).expect("Cannot read file");
 
     //regex is used to make a guideline for how URLs will be searched for. Specifically looks for items that start with a https
@@ -118,14 +72,13 @@ fn file_reader(path: PathBuf) {
         StatusOptions::NoURLs => "None",
         StatusOptions::ValidURL => "Valid",
     };
-    //
-    println!(
-        "{0: <120} | {1: <15} | {2:10}",
-        path.display(),
-        status_string,
-        status_code
-    );
-}
-=======
-}
->>>>>>> Stashed changes
+
+    //The following is commented out to make cargo bench look cleaner
+
+    // println!(
+    //     "{0: <120} | {1: <15} | {2:10}",
+    //     path.display(),
+    //     status_string,
+    //     status_code
+    // );
+}}
